@@ -222,28 +222,32 @@ async def upload(file: UploadFile = File(...), user_id: int = Depends(get_curren
     results = []
     
     # Process AI answers
-    for _, row in df.iterrows():
-        qid      = str(row["Question_ID"]).strip()
-        question = str(row["Question"]).strip()
-        rag_out  = process_question(question)
+    try:
+        for _, row in df.iterrows():
+            qid      = str(row["Question_ID"]).strip()
+            question = str(row["Question"]).strip()
+            rag_out  = process_question(question)
 
-        conn.execute(
-            """INSERT INTO answers 
-               (document_id, question_id, question, answer, citation, snippet, confidence, llm_status) 
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
-            (doc_id, qid, question,
-             rag_out["answer"], rag_out["citation"], rag_out["snippet"], rag_out.get("confidence", 0.0), rag_out.get("llm_status", "Verified"))
-        )
+            conn.execute(
+                """INSERT INTO answers 
+                   (document_id, question_id, question, answer, citation, snippet, confidence, llm_status) 
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+                (doc_id, qid, question,
+                 rag_out["answer"], rag_out["citation"], rag_out["snippet"], rag_out.get("confidence", 0.0), rag_out.get("llm_status", "Verified"))
+            )
 
-        results.append({
-            "id": qid,
-            "question": question,
-            "answer": rag_out["answer"],
-            "citation": rag_out["citation"],
-            "snippet": rag_out["snippet"],
-            "confidence": rag_out.get("confidence", 0.0),
-            "llm_status": rag_out.get("llm_status", "Verified"),
-        })
+            results.append({
+                "id": qid,
+                "question": question,
+                "answer": rag_out["answer"],
+                "citation": rag_out["citation"],
+                "snippet": rag_out["snippet"],
+                "confidence": rag_out.get("confidence", 0.0),
+                "llm_status": rag_out.get("llm_status", "Verified"),
+            })
+    except Exception as e:
+        conn.close()
+        raise HTTPException(status_code=500, detail=f"RAG Engine Error: {str(e)}")
 
     conn.commit()
     conn.close()

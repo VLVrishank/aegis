@@ -127,7 +127,10 @@ def process_question(question: str) -> dict:
         }
 
     # ── Generate via Groq ─────────────────────────────────────────────────────
-    client = Groq(api_key=os.environ["GROQ_API_KEY"])
+    api_key = os.environ.get("GROQ_API_KEY")
+    if not api_key:
+        raise ValueError("GROQ_API_KEY is missing from the environment variables (HF Secrets).")
+    client = Groq(api_key=api_key)
     prompt = (
         "You are an expert security compliance assistant for Aegis Security Solutions.\n"
         "You are given MULTIPLE context passages from internal policy documents.\n"
