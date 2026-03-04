@@ -8,6 +8,7 @@ onnxruntime==1.17.3
 groq
 langchain
 langchain-community
+langchain-text-splitters
 PyJWT
 passlib
 bcrypt
