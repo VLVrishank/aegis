@@ -19,7 +19,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel
 
 import jwt
-from passlib.context import CryptContext
+import bcrypt
 
 from rag_engine import build_vector_store, process_question
 
@@ -33,7 +33,7 @@ DB_PATH   = _data_dir / "aegis_v2.db"
 SECRET_KEY = os.environ.get("JWT_SECRET", "super-secret-aegis-key-2026")
 ALGORITHM = "HS256"
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+ALGORITHM = "HS256"
 
 # ── Database ──────────────────────────────────────────────────────────────────
 def get_db():
@@ -80,7 +80,7 @@ def init_db():
     # Seed default admin if missing
     row = conn.execute("SELECT id FROM users WHERE username='admin'").fetchone()
     if not row:
-        default_hash = pwd_context.hash("aegis2024")
+        default_hash = bcrypt.hashpw(b"aegis2024", bcrypt.gensalt()).decode("utf-8")
         conn.execute("INSERT INTO users (username, password_hash) VALUES (?, ?)", ("admin", default_hash))
     conn.commit()
     conn.close()
@@ -161,7 +161,7 @@ async def get_sample():
 async def register(req: LoginRequest):
     conn = get_db()
     try:
-        hashed = pwd_context.hash(req.password)
+        hashed = bcrypt.hashpw(req.password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
         conn.execute("INSERT INTO users (username, password_hash) VALUES (?, ?)", (req.username, hashed))
         conn.commit()
     except sqlite3.IntegrityError:
@@ -178,7 +178,7 @@ async def login(req: LoginRequest, response: Response):
     row = conn.execute("SELECT id, password_hash FROM users WHERE username=?", (req.username,)).fetchone()
     conn.close()
     
-    if not row or not pwd_context.verify(req.password, row["password_hash"]):
+    if not row or not bcrypt.checkpw(req.password.encode("utf-8"), row["password_hash"].encode("utf-8")):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
     # Generate 7-day token
