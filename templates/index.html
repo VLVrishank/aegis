@@ -263,6 +263,21 @@
                         Account created! You may now sign in.</div>
                     <button id="auth-btn" type="submit" class="btn-primary w-full rounded py-2.5 text-[14px] mt-2">Sign
                         In</button>
+
+                    <div id="sample-creds" class="mt-4 flex flex-col items-center gap-3">
+                        <div class="w-full p-3 bg-slate-50 border border-slate-100 rounded text-[12px] text-slate-500 text-center cursor-pointer hover:bg-slate-100 transition-colors"
+                            onclick="document.getElementById('username').value='admin'; document.getElementById('password').value='aegis2024';">
+                            <span class="block mb-1 font-medium text-slate-700">Test Account</span>
+                            ID: <strong class="text-slate-900">admin</strong> &nbsp;•&nbsp; Pass: <strong
+                                class="text-slate-900">aegis2024</strong>
+                            <span class="block mt-1 text-[10px] text-blue-600">(Click to autofill)</span>
+                        </div>
+                        <div class="text-[11px] text-gray-400">
+                            Or <button type="button" onclick="setAuthMode('register')"
+                                class="text-blue-600 hover:text-blue-800 transition-colors font-medium">create your own
+                                account</button>.
+                        </div>
+                    </div>
                 </form>
             </div>
         </div>
@@ -483,6 +498,12 @@
             $('tab-login').className = m === 'login' ? 'tab-active text-[14px]' : 'tab-inactive text-[14px]';
             $('tab-register').className = m === 'register' ? 'tab-active text-[14px]' : 'tab-inactive text-[14px]';
             $('auth-btn').textContent = m === 'login' ? 'Sign In' : 'Create Account';
+
+            if (m === 'login') {
+                show('sample-creds');
+            } else {
+                hide('sample-creds');
+            }
         }
 
         $('auth-form').addEventListener('submit', async e => {
