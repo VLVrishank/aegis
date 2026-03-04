@@ -1,0 +1,43 @@
+=========================================
+AEGIS SECURITY SOLUTIONS: SECURE SOFTWARE DEVELOPMENT LIFE CYCLE (SSDLC)
+=========================================
+Document ID: SEC-DEV-033-2026
+Effective Date: April 1, 2026
+Owner: Application Security Engineering & DevOps (AppSec)
+Classification: CONFIDENTIAL - SOURCE CODE
+
+1. PURPOSE
+The Secure SDLC (SSDLC) Policy defines the mandatory security control gates seamlessly integrated into the software engineering methodologies at Aegis. This policy mitigates the risk of deploying critical vulnerabilities into production code thereby preserving confidentiality, integrity, and availability.
+
+2. SCOPE
+This process encompasses all Aegis developed software (SaaS, microservices, mobile apps, desktop solutions, serverless functions) across all development lifecycles (Agile, CI/CD, DevOps). It affects software engineers, QA testers, product managers, and cloud architects globally. Open-source libraries, third-party code modifications, and integrations (APIs) are also subject to this SSDLC.
+
+3. SSDLC PHASES & SECURITY GATES
+3.1. Requirements Gathering (Phase 1)
+- Threat Modeling: A formal threat model (utilizing STRIDE methodology) must be completed for every new product, critical feature, or substantial architectural shift before engineering begins. Data classification matrices define if the application handles PII/PHI.
+- Security Requirements: Non-functional security requirements (e.g., OWASP ASVS Level 2 equivalent) must be explicitly documented into JIRA Epics and stories.
+
+3.2. Architecture and Design (Phase 2)
+- Zero Trust Principles: Engineers must inherently distrust internal and external networks. Microservices must mutually authenticate via mTLS (Istio/Service Mesh). Centralized Identity Providers (IdP) must handle robust authentication; custom crypto or custom AuthZ paradigms are prohibited.
+- Architecture Risk Assessment (ARA): AppSec engineers actively validate network segmentation, logging parameters, and secure database configurations.
+
+3.3. Development and Code Construction (Phase 3)
+- Peer Review: All commits to main/master branches or pull requests (PRs) require authorization by at least one Senior Technical Lead or Peer Reviewer other than the author.
+- Static Application Security Testing (SAST): SAST scanners (e.g., Checkmarx, SonarQube) are mandatorily enforced on every PR commit. CRITICAL and HIGH severity findings will automatically break the build and strictly block the branch merge until directly remediated.
+- Software Composition Analysis (SCA): SCA tools (e.g., Snyk) must continuously parse the dependency graph for CVEs in third-party libraries (npm, maven, pip) and identify non-compliant open-source licenses (GPLv3).
+
+3.4. Testing (Phase 4)
+- Dynamic Application Security Testing (DAST): Automated DAST execution targeting non-production staging environments prior to every major release identifying runtime logic flaws (e.g., cross-site scripting, improper authorization paths).
+- Penetration Testing: Annually, a PCI-certified third party must execute a manual "White Box" penetration test on externally facing architectures handling restricted data. 
+- QA Validation: Test automation suites must integrate specific negative logic test cases mirroring OWASP Top 10 vulnerabilities (Injection, Broken Authentication, IDOR).
+
+3.5. Deployment (Phase 5)
+- Infrastructure as Code (IaC): Terraform/CloudFormation templates require static analysis (Checkov/tfsec) to identify misconfigurations securely (e.g., public S3 buckets) before pushing to pipelines. Deployment requires strict separation of duties; developers may not execute code pushes to the production environment directly (GitOps workflow via ArgoCD).
+- Secrets Management: Hardcoded API keys are completely barred. Vault (HashiCorp) or native cloud KMS must inject dynamic secrets strictly at runtime.
+
+3.6. Operations and Maintenance (Phase 6)
+- Continuous Scanning: Production instances undergo continuous Vulnerability Assessment scanning (Qualys/Tenable). Bug Bounty programs and Vulnerability Disclosure Pages (VDP) managed by independent researchers must integrate directly into the Jira triage pipeline.
+- End-of-Life (EOL): Sunset applications must execute a secure retirement, cryptographically sanitizing backing databases.
+
+4. EXCEPTIONS
+Business-critical releases actively suppressing HIGH severity SAST flaws require signed approval from the AppSec Director and VP of Engineering, accompanied entirely by a compensating control and a 30-day remediation JIRA ticket.

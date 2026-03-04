@@ -1,0 +1,31 @@
+=========================================
+AEGIS SECURITY SOLUTIONS: CYBER INCIDENT RESPONSE PLAN (CSIRP)
+=========================================
+Document ID: SEC-IR-099-2026
+Effective Date: March 15, 2026
+Owner: Cyber Security Incident Response Team (CSIRT)
+Classification: EXTREMELY CONFIDENTIAL
+
+1. PURPOSE & SCOPE
+This document outlines the Aegis Security Solutions ("Aegis") structured methodology for identifying, actively managing, legally communicating, and resolving cyber security incidents. This plan governs the Aegis ecosystem—encompassing AWS US-EAST-1/EU-WEST-1 corporate infrastructure, global offices, contractor endpoints (VPN-dependent), zero-trust networks, proprietary source code repositories, PII/PHI datastores, and the integrated supply chain (Sub-processors).
+
+2. INCIDENT CLASSIFICATION MATRIX
+The execution intensity depends entirely on the Severity Level. The initial assigned triage analyst has 15 minutes to qualify suspected incidents as per the Aegis ISO-27035 methodology.
+- SEV 4 (Low): Isolated malware alert (e.g., standard phishing resolved by endpoint EDR). Remediated by L1 SOC Analysts. No external notification required.
+- SEV 3 (Medium): Multiple targeted attacks, minor PII exposure (< 100 individuals), lateral movement detected internally without C2 (Command & Control) beaconing. Notification: Internal Director of InfoSec within 12 hours.
+- SEV 2 (High): Critical system outage (revenue impact > $10,000/hr), confirmed exfiltration of PHI/PII (> 101 individuals), confirmed active C2 inside the DMZ. The CSIRT commander is paged. Notification: Legal, CISO, PR within 4 hours.
+- SEV 1 (Critical): Total corporate network compromise (Ransomware), unauthorized root access to global authentication identity providers (Entra ID), source code exfiltration, substantial financial fraud/P1 outage. CSIRT War Room established. Board of Directors and Regulatory Bodies (GDPR DPA/FBI) notified within 72 hours. 
+
+3. PHASES OF THE INCIDENT RESPONSE LIFECYCLE (NIST SP 800-61 Rev. 2)
+1. Preparation: Tabletop exercises conducted semi-annually. Threat intelligence feeds (CrowdStrike, Mandiant) integrated into the corporate SIEM (Splunk Cloud). Dedicated "Jump Bags" and Out-Of-Band (OOB) communication tools (Signal, encrypted radios) pre-positioned. 
+2. Identification: Defined by triaging automated IDS/IPS alerts, user-reported anomalies via Zendesk, or anomalous egress traffic patterns (DLP hits). A formal Incident Commander is designated precisely upon positive identification.
+3. Containment (Short/Long-Term): Initial isolation preventing lateral movement and external data exfiltration. Immediate actions frequently include: disabling affected active directory accounts, segregating virtual VLAN segments at switches, utilizing EDR host isolation (CrowdStrike Network Containment), rotating compromised AWS IAM credentials, and blocking rogue IP addresses/hashes at the Palo Alto firewalls. Note: Forensic imaging must absolutely precede any destructive or restorative actions to preserve the cyber chain-of-custody.
+4. Eradication: Deep forensic identification of the root cause. Removing all malicious artifacts (malware modules, unauthorized backdoors, rogue Cron jobs, unauthorized RDP connections, compromised API tokens) and hardening the environment before reconstitution. 
+5. Recovery: Gradual restoration of affected systems to normal operating conditions starting from "known good" segregated backups (immutable storage architectures). Continuous enhanced SIEM monitoring applied for 30 days post-incident to detect persistence or reinfection. 
+6. Lessons Learned (Post-Mortem): Conducted within 14 days of closure. Executive summary generated. Action items immediately integrated into future architecture and operational procedures to mitigate recurrent attack vectors natively. 
+
+4. EXTERNAL NOTIFICATION & REGULATORY COMPLIANCE
+Under no circumstances may a technical engineer communicate an active incident to external entities, clients, or the press without direct authorization from the General Counsel and Corporate Communications team. Aegis mandates strict adherence to the GDPR 72-hour notification window, CCPA requirements, and SEC 4-day disclosure rules for material cybersecurity incidents (Form 8-K).
+
+5. WAR ROOM LOGISTICS
+For SEV 2 and SEV 1 incidents, a physical and virtual (OOB) "War Room" is established continuously. It runs 24/7 operated by shift shifts. Physical access is biometrically restricted exclusively to CSIRT and Legal executives.

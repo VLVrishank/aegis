@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aegis Responder — Internal Compliance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            --ring-color: #e2e8f0;
+        }
+
+        body {
+            background-color: #ffffff;
+            color: #202124;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .field {
+            background: #ffffff;
+            border: 1px solid #dadce0;
+            color: #202124;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .field:focus {
+            outline: none;
+            border-color: #1a73e8;
+            box-shadow: none;
+        }
+
+        .field::placeholder {
+            color: #80868b;
+        }
+
+        .btn-primary {
+            background-color: #1a73e8;
+            color: #ffffff;
+            transition: opacity 0.15s ease;
+            font-weight: 500;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .btn-primary:disabled {
+            background-color: #f1f3f4;
+            color: #80868b;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background-color: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #334155;
+            transition: all 0.15s;
+        }
+
+        .btn-secondary:hover {
+            background-color: #f1f5f9;
+            border-color: #94a3b8;
+        }
+
+        .tab-active {
+            color: #0f172a;
+            font-weight: 600;
+            border-bottom: 2px solid #3b82f6;
+            padding-bottom: 0.875rem;
+        }
+
+        .tab-inactive {
+            color: #64748b;
+            font-weight: 500;
+            padding-bottom: 0.875rem;
+            transition: color 0.15s;
+        }
+
+        .tab-inactive:hover {
+            color: #334155;
+        }
+
+        #drop-zone {
+            border: 1px dashed #dadce0;
+            background-color: #ffffff;
+            transition: background-color 0.2s ease;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        #drop-zone.drag-over,
+        #drop-zone:hover {
+            background-color: #f8f9fa;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th {
+            background-color: #ffffff;
+            border-bottom: 1px solid #dadce0;
+            color: #5f6368;
+            font-weight: 500;
+            text-transform: none;
+            padding: 12px 16px;
+        }
+
+        td {
+            border-bottom: 1px solid #f1f3f4;
+            padding: 16px;
+            vertical-align: top;
+        }
+
+        tr:hover td {
+            background-color: #f8f9fa;
+        }
+
+        [contenteditable="true"] {
+            transition: background-color 0.2s, outline 0.2s;
+            padding: 0.25rem 0.5rem;
+            margin: -0.25rem -0.5rem;
+            border-radius: 4px;
+        }
+
+        [contenteditable="true"]:hover {
+            background-color: #f1f5f9;
+        }
+
+        [contenteditable="true"]:focus {
+            outline: 2px solid #3b82f6;
+            background-color: #ffffff;
+        }
+
+        .hist-btn {
+            transition: all 0.1s ease;
+            border: 1px solid transparent;
+        }
+
+        .hist-btn:hover {
+            background-color: #f1f5f9;
+            border-color: #e2e8f0;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .spinner {
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease forwards;
+        }
+    </style>
+</head>
+
+<body class="relative min-h-screen flex flex-col" onload="checkAuth()">
+
+    <!-- ================= LOGIN SCREEN ================= -->
+    <div id="login-screen" class="hidden flex-1 flex min-h-screen bg-white fade-in">
+
+        <!-- Left Pane - Branding & Graphic text -->
+        <div
+            class="hidden lg:flex flex-col justify-between w-1/2 bg-slate-900 text-white p-12 relative overflow-hidden">
+            <!-- Abstract Background -->
+            <div
+                class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-20 mix-blend-luminosity">
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-b from-blue-900/50 to-slate-900/80"></div>
+
+            <div class="relative z-10 flex items-center gap-3">
+                <svg class="w-8 h-8 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                        d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z" />
+                </svg>
+                <span class="text-xl font-bold tracking-tight">Aegis Operations</span>
+            </div>
+
+            <div class="relative z-10 max-w-md">
+                <h2 class="text-3xl font-medium tracking-tight mb-4 leading-tight">Automated Compliance<br />& FAQ
+                    Intelligence</h2>
+                <p class="text-slate-300 text-[15px] leading-relaxed">
+                    Secure internal intelligence platform. Validate compliance protocols and security postures
+                    instantly. Aegis Operations provides instantaneous RAG-powered answers to company questionnaires and
+                    security FAQs.
+                </p>
+            </div>
+
+            <div class="relative z-10 text-[13px] text-slate-500 font-medium tracking-wide uppercase">
+                Aegis Security Solutions • Internal Use Only
+            </div>
+        </div>
+
+        <!-- Right Pane - Login Form -->
+        <div class="flex-1 flex flex-col justify-center items-center px-8 sm:px-12 relative bg-white">
+            <div class="w-full max-w-[400px]">
+
+                <!-- Mobile Only Header -->
+                <div class="lg:hidden mb-10">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div
+                            class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center shadow-sm text-white">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z" />
+                            </svg>
+                        </div>
+                        <span class="text-lg font-bold tracking-tight text-gray-900">Aegis Operations</span>
+                    </div>
+                </div>
+
+                <!-- Desktop Header -->
+                <div class="mb-10">
+                    <h1 class="text-[26px] font-semibold tracking-tight text-gray-900">Sign in</h1>
+                    <p class="text-gray-500 text-[15px] mt-2">Enter your corporate credentials to continue.</p>
+                </div>
+
+                <div class="flex gap-6 mb-8 border-b border-gray-100">
+                    <button id="tab-login" onclick="setAuthMode('login')" class="tab-active text-[14px]">Sign
+                        In</button>
+                    <button id="tab-register" onclick="setAuthMode('register')" class="tab-inactive text-[14px]">Create
+                        Account</button>
+                </div>
+
+                <form id="auth-form" class="space-y-5">
+                    <div>
+                        <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Corporate ID</label>
+                        <input id="username" type="text" placeholder="e.g. jdoe"
+                            class="field w-full rounded px-4 py-2.5 text-[14px]" required />
+                    </div>
+                    <div>
+                        <label class="block text-[12px] font-medium text-gray-600 mb-1.5">Passcode</label>
+                        <input id="password" type="password" placeholder="••••••••"
+                            class="field w-full rounded px-4 py-2.5 text-[14px]" required />
+                    </div>
+                    <div id="auth-error"
+                        class="hidden text-red-600 text-[13px] font-medium bg-red-50 rounded px-4 py-3 border border-red-100">
+                        Error occurred.</div>
+                    <div id="auth-success"
+                        class="hidden text-emerald-700 text-[13px] font-medium bg-emerald-50 rounded px-4 py-3 border border-emerald-100">
+                        Account created! You may now sign in.</div>
+                    <button id="auth-btn" type="submit" class="btn-primary w-full rounded py-2.5 text-[14px] mt-2">Sign
+                        In</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= DASHBOARD ================= -->
+    <div id="dashboard" class="hidden flex-1 flex-col bg-white">
+
+        <!-- Top Navigation -->
+        <header class="bg-white border-b border-gray-200 sticky top-0 z-40 h-[60px] flex items-center">
+            <div class="max-w-[1400px] w-full mx-auto px-6 flex items-center justify-between">
+
+                <!-- Left: Brand & Nav -->
+                <div class="flex items-center gap-10">
+                    <div class="flex items-center gap-2.5">
+                        <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z" />
+                        </svg>
+                        <span class="font-medium text-gray-800 text-[15px] tracking-tight">Aegis Operations</span>
+                    </div>
+
+                    <nav class="hidden sm:flex items-center gap-4">
+                        <button id="nav-process" onclick="switchNav('process')"
+                            class="py-4 text-[13px] font-medium text-blue-600 border-b-2 border-blue-600 transition-all">Process
+                            Document</button>
+                        <button id="nav-history" onclick="switchNav('history')"
+                            class="py-4 text-[13px] font-medium text-gray-500 hover:text-gray-900 border-b-2 border-transparent transition-all">History</button>
+                    </nav>
+                </div>
+
+                <!-- Right: Actions -->
+                <div class="flex items-center gap-4">
+                    <span id="active-user-badge"
+                        class="hidden md:inline-flex items-center gap-1.5 text-gray-600 text-sm mr-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        <span id="badge-username">User</span>
+                    </span>
+                    <button id="download-btn" onclick="downloadCSV()"
+                        class="hidden text-white hover:bg-emerald-700 bg-emerald-600 flex items-center gap-1.5 px-4 py-1.5 rounded-md text-[13px] font-medium transition-colors shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 4v12m0 0l-4-4m4 4l4-4m-4 4L12 16" />
+                        </svg>
+                        Export CSV
+                    </button>
+                    <div class="w-px h-4 bg-gray-300 hidden sm:block mx-1"></div>
+                    <button onclick="logout()"
+                        class="text-gray-500 hover:text-gray-900 text-[13px] font-medium transition-colors">Sign
+                        Out</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-[1400px] mx-auto w-full px-6 py-8 flex-1 space-y-6">
+            <div class="flex flex-col xl:flex-row gap-8 items-start">
+
+                <!-- Left Column: Controls (Sticky) -->
+                <div
+                    class="w-full xl:w-80 flex flex-col gap-6 sticky top-24 xl:border-r xl:border-gray-200 xl:pr-8 xl:min-h-[calc(100vh-120px)]">
+
+                    <!-- View 1: Uploader -->
+                    <div id="view-uploader" class="flex flex-col gap-6 w-full">
+                        <div class="fade-in">
+                            <div class="flex items-center justify-between mb-2">
+                                <h2 class="text-[14px] font-medium text-gray-900">Import Questions</h2>
+                                <button onclick="loadSampleCSV()"
+                                    class="text-[12px] text-blue-600 hover:text-blue-800 transition-colors font-medium">
+                                    Load Sample CSV
+                                </button>
+                            </div>
+
+                            <div class="text-[12px] text-gray-500 mb-4 leading-relaxed">
+                                Upload a <code class="bg-gray-100 px-1 py-0.5 rounded font-mono">.csv</code> file. First
+                                row headers must be: <code
+                                    class="bg-gray-100 px-1 py-0.5 rounded font-mono">Question_ID</code>, <code
+                                    class="bg-gray-100 px-1 py-0.5 rounded font-mono">Question</code>.
+                            </div>
+
+                            <div id="drop-zone" class="p-8 text-center"
+                                onclick="document.getElementById('csv-upload').click()"
+                                ondragenter="event.preventDefault(); event.stopPropagation();"
+                                ondragover="event.preventDefault(); event.stopPropagation(); this.classList.add('drag-over')"
+                                ondragleave="event.preventDefault(); event.stopPropagation(); this.classList.remove('drag-over')"
+                                ondrop="handleDrop(event)">
+                                <svg class="w-6 h-6 mx-auto text-gray-400 mb-2" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                </svg>
+                                <div id="file-label" class="text-[13px] font-medium text-gray-600">Select file or drag &
+                                    drop</div>
+                                <input type="file" id="csv-upload" accept=".csv" class="hidden"
+                                    onchange="onFileSelected(this)" />
+                            </div>
+
+                            <button id="generate-btn" onclick="generateAnswers()" disabled
+                                class="btn-primary w-full rounded py-2 mt-4 text-[13px] font-medium flex items-center justify-center gap-2">
+                                <span id="btn-text">Process Document</span>
+                                <svg id="loading-icon" class="hidden spinner w-4 h-4 text-white" fill="none"
+                                    viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                        stroke-width="3" />
+                                    <path class="opacity-75" fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- View 2: History Timeline -->
+                    <div id="view-timeline" class="hidden flex flex-col gap-6 w-full">
+                        <div class="fade-in max-h-[calc(100vh-140px)] flex flex-col">
+                            <h2 class="text-[14px] font-medium text-gray-900 mb-1">History</h2>
+                            <p class="text-[12px] text-gray-500 mb-4 pb-2 border-b border-gray-100">Select past runs</p>
+
+                            <div class="overflow-y-auto flex-1 pr-1">
+                                <div id="history-loading" class="text-[13px] text-gray-400 py-4">Locating records...
+                                </div>
+                                <div id="history-empty" class="hidden text-[13px] text-gray-400 py-4">No history found.
+                                </div>
+                                <div id="history-list" class="flex flex-col gap-1"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Summary Widget -->
+                    <div id="summary-bar" class="hidden fade-in mt-6 pt-6 border-t border-gray-100">
+                        <h3 class="text-[11px] font-semibold text-gray-500 uppercase tracking-widest mb-3">Review
+                            Summary</h3>
+                        <div class="space-y-1 text-[13px] text-gray-800">
+                            <div class="flex justify-between py-1">
+                                <span>Total</span>
+                                <span id="count-total" class="font-medium">0</span>
+                            </div>
+                            <div class="flex justify-between py-1">
+                                <span class="text-green-700">Verified</span>
+                                <span id="count-answered" class="font-medium text-green-700">0</span>
+                            </div>
+                            <div class="flex justify-between py-1">
+                                <span class="text-red-700">Flagged & Plausible</span>
+                                <span id="count-notfound" class="font-medium text-red-700">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Right Column: Data Grid -->
+                <div class="flex-1 w-full relative">
+
+                    <div id="placeholder-grid"
+                        class="absolute inset-0 flex flex-col items-center justify-center text-gray-400 min-h-[500px]">
+                        <p class="text-[14px] text-gray-400">No document loaded</p>
+                    </div>
+
+                    <div id="results-wrapper" class="hidden fade-in bg-white h-fit">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-[14px]">
+                                <thead>
+                                    <tr>
+                                        <th class="w-16">ID</th>
+                                        <th class="w-[30%]">Question</th>
+                                        <th>Answer</th>
+                                        <th class="w-24">Confidence</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="result-tbody" class="text-gray-800"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="text-center py-6 text-[12px] text-gray-400 border-t border-gray-100 bg-white">
+            &copy; 2026 Aegis Security Solutions. All rights reserved. Confidential and Proprietary.
+        </footer>
+    </div>
+
+    <script>
+        let authMode = 'login';
+        let selectedFile = null;
+
+        const $ = id => document.getElementById(id);
+        const show = id => $(id).classList.remove('hidden');
+        const hide = id => $(id).classList.add('hidden');
+
+        function escHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        // ── Pre-Flight / Auth ──
+        async function checkAuth() {
+            try {
+                const res = await fetch('/me');
+                if (res.ok) {
+                    const data = await res.json();
+                    $('badge-username').textContent = data.username;
+                    show('dashboard');
+                    $('dashboard').classList.add('flex');
+                } else {
+                    show('login-screen');
+                }
+            } catch {
+                show('login-screen');
+            }
+        }
+
+        function setAuthMode(m) {
+            authMode = m;
+            hide('auth-error'); hide('auth-success');
+
+            $('tab-login').className = m === 'login' ? 'tab-active text-[14px]' : 'tab-inactive text-[14px]';
+            $('tab-register').className = m === 'register' ? 'tab-active text-[14px]' : 'tab-inactive text-[14px]';
+            $('auth-btn').textContent = m === 'login' ? 'Sign In' : 'Create Account';
+        }
+
+        $('auth-form').addEventListener('submit', async e => {
+            e.preventDefault();
+            const btn = $('auth-btn');
+            btn.disabled = true;
+            hide('auth-error'); hide('auth-success');
+
+            const payload = {
+                username: $('username').value.trim(),
+                password: $('password').value,
+            };
+
+            try {
+                if (authMode === 'register') {
+                    const res = await fetch('/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    if (!res.ok) {
+                        const data = await res.json();
+                        throw new Error(data.detail || 'Registration failed');
+                    }
+                    show('auth-success');
+                    setAuthMode('login');
+                } else {
+                    const res = await fetch('/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    if (!res.ok) throw new Error('Invalid credentials');
+                    hide('login-screen');
+                    checkAuth();
+                }
+            } catch (err) {
+                let errBox = $('auth-error');
+                errBox.textContent = err.message;
+                show('auth-error');
+            } finally {
+                btn.disabled = false;
+            }
+        });
+
+        async function logout() {
+            await fetch('/logout', { method: 'POST' });
+            $('dashboard').classList.remove('flex');
+            hide('dashboard');
+            show('login-screen');
+
+            // Scrub forms
+            $('password').value = '';
+            $('username').value = '';
+
+            // Purge JS State
+            selectedFile = null;
+            window.currentDocId = null;
+            $('file-label').innerHTML = `Select file or drag & drop`;
+            $('drop-zone').classList.remove('bg-blue-50', 'border-blue-400');
+            $('generate-btn').disabled = true;
+            $('history-list').innerHTML = '';
+
+            // Purge Grids
+            $('result-tbody').innerHTML = '';
+            hide('results-wrapper'); hide('summary-bar'); hide('download-btn');
+            show('placeholder-grid');
+
+            // Reset nav to process
+            switchNav('process');
+        }
+
+        // ── Navigation ──
+        function switchNav(tab) {
+            const activeClass = "py-4 text-[13px] font-medium text-blue-600 border-b-2 border-blue-600 transition-all";
+            const inactiveClass = "py-4 text-[13px] font-medium text-gray-500 hover:text-gray-900 border-b-2 border-transparent transition-all";
+
+            $('nav-process').className = tab === 'process' ? activeClass : inactiveClass;
+            $('nav-history').className = tab === 'history' ? activeClass : inactiveClass;
+
+            if (tab === 'process') {
+                show('view-uploader');
+                hide('view-timeline');
+
+                // Completely clean slate for new uploads
+                selectedFile = null;
+                window.currentDocId = null;
+                $('file-label').innerHTML = `Select file or drag & drop`;
+                $('drop-zone').classList.remove('bg-blue-50', 'border-blue-400');
+                $('generate-btn').disabled = true;
+
+                $('result-tbody').innerHTML = '';
+                hide('results-wrapper'); hide('summary-bar'); hide('download-btn');
+                show('placeholder-grid');
+            } else {
+                hide('view-uploader');
+                show('view-timeline');
+                loadHistory();
+            }
+        }
+
+        // ── History ──
+        async function loadHistory() {
+            const list = $('history-list');
+            list.innerHTML = '';
+            show('history-loading'); hide('history-empty');
+
+            try {
+                const res = await fetch('/history');
+                if (!res.ok) throw new Error('Failed to load history');
+                const docs = await res.json();
+
+                hide('history-loading');
+                if (docs.length === 0) show('history-empty');
+
+                docs.forEach(doc => {
+                    const btn = document.createElement('button');
+                    btn.className = 'hist-btn py-2 text-left w-full group overflow-hidden bg-white border-b border-gray-100';
+                    btn.onclick = () => loadDocument(doc.id);
+
+                    let dateStr = 'Unknown Date';
+                    try {
+                        if (doc.created_at) dateStr = new Date(doc.created_at + 'Z').toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                    } catch (e) { }
+
+                    btn.innerHTML = `
+            <div class="text-[13px] font-medium text-gray-800 truncate group-hover:text-blue-600 transition-colors">${escHtml(doc.filename)}</div>
+            <div class="text-[11px] text-gray-400">${dateStr}</div>
+          `;
+                    list.appendChild(btn);
+                });
+            } catch (err) {
+                hide('history-loading');
+                list.innerHTML = `<p class="text-xs text-red-500 font-semibold px-2">Error loading records: ${err.message}</p>`;
+            }
+        }
+
+        async function loadDocument(id) {
+            hide('placeholder-grid');
+            $('result-tbody').innerHTML = '<tr><td colspan="4" class="text-center py-10 text-slate-400 text-sm font-medium">Fetching history record...</td></tr>';
+            show('results-wrapper');
+
+            try {
+                const res = await fetch(`/history/${id}`);
+                if (!res.ok) throw new Error("Could not retrieve document");
+                const data = await res.json();
+                window.currentDocId = data.document_id;
+                renderResults(data.answers);
+            } catch (e) {
+                alert("Error loading document: " + e.message);
+            }
+        }
+
+        // ── File Drops ──
+        function onFileSelected(input) {
+            if (input.files.length) attachFile(input.files[0]);
+            input.value = '';
+        }
+        function handleDrop(e) {
+            e.preventDefault(); e.stopPropagation(); $('drop-zone').classList.remove('drag-over');
+            if (e.dataTransfer.files[0]?.name.endsWith('.csv')) attachFile(e.dataTransfer.files[0]);
+        }
+        function attachFile(f) {
+            selectedFile = f;
+            $('file-label').innerHTML = `<span class="text-blue-600 font-medium">${f.name}</span> selected`;
+            $('drop-zone').classList.add('bg-blue-50', 'border-blue-400');
+            $('generate-btn').disabled = false;
+        }
+
+        async function loadSampleCSV() {
+            try {
+                const res = await fetch('/sample.csv');
+                if (!res.ok) throw new Error('Failed to load sample CSV');
+                const text = await res.text();
+                const blob = new Blob([text], { type: 'text/csv' });
+                const file = new File([blob], 'aegis_sample_questionnaire.csv', { type: 'text/csv' });
+                attachFile(file);
+            } catch (err) {
+                alert('Could not load sample CSV: ' + err.message);
+            }
+        }
+
+        async function generateAnswers() {
+            if (!selectedFile) return;
+            const btn = $('generate-btn');
+            btn.disabled = true; $('btn-text').textContent = "Processing..."; show('loading-icon');
+
+            hide('summary-bar'); hide('results-wrapper'); hide('download-btn');
+            $('result-tbody').innerHTML = '';
+
+            const form = new FormData(); form.append('file', selectedFile);
+            try {
+                const res = await fetch('/upload', { method: 'POST', body: form });
+                if (!res.ok) throw new Error(await res.text());
+                const data = await res.json();
+                window.currentDocId = data.document_id;
+                renderResults(data.answers);
+            } catch (err) {
+                alert('Server Error.\nIf this persists, check server logs.');
+            } finally {
+                btn.disabled = false; $('btn-text').textContent = "Process Document"; hide('loading-icon');
+            }
+        }
+
+        // ── Rendering Grid ──
+        function renderResults(rows) {
+            const tbody = $('result-tbody');
+            tbody.innerHTML = '';
+
+            let answered = 0; let plausible = 0; let notFound = 0;
+
+            rows.forEach(row => {
+                const isFound = row.answer !== 'Not found in references.';
+                const matchPctNum = row.confidence !== undefined ? row.confidence : 0;
+                const matchPct = matchPctNum.toFixed(1);
+
+                let badgeState = row.llm_status || 'Flagged';
+                let dotColor = 'bg-red-500';
+
+                if (badgeState === 'Verified') {
+                    dotColor = 'bg-green-500';
+                    answered++;
+                } else if (badgeState === 'Plausible') {
+                    dotColor = 'bg-yellow-500';
+                    plausible++;
+                } else {
+                    badgeState = 'Flagged';
+                    notFound++;
+                }
+
+                const snippetHtml = row.snippet && row.snippet !== 'None'
+                    ? `<div class="mt-4 flex flex-col gap-1">
+               <span class="text-[10px] text-gray-400 uppercase tracking-widest">CLOSEST CONTEXT FOUND — ${escHtml(row.citation)}</span>
+               <span class="text-[13px] text-gray-500 leading-relaxed">"${escHtml(row.snippet.substring(0, 180))}${row.snippet.length > 180 ? '…' : ''}"</span>
+             </div>` : '';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+          <td><span class="text-[12px] text-gray-400">${escHtml(row.id)}</span></td>
+          <td class="leading-relaxed text-gray-800 pr-4">${escHtml(row.question)}</td>
+          <td class="py-4 pr-4">
+            <div contenteditable="true" class="text-gray-800 leading-relaxed min-w-0 resize-y focus:outline-none p-1 -m-1">${escHtml(row.answer)}</div>
+            ${snippetHtml}
+          </td>
+          <td class="py-4 flex flex-col gap-1">
+            <div class="flex items-center gap-2">
+                <div class="w-1.5 h-1.5 rounded-full ${dotColor}"></div>
+                <span class="text-[12px] text-gray-600">${badgeState}</span>
+            </div>
+            <span class="text-[12px] text-gray-400 w-fit pl-3.5">${matchPct}% similar</span>
+            <button onclick="regenerateAnswer('${escHtml(row.id).replace(/'/g, "\\'")}', \`${escHtml(row.question).replace(/`/g, '\\`')}\`, this)" class="mt-2 pl-3.5 text-[11px] text-blue-600 hover:text-blue-800 transition-colors w-fit">
+                Search again
+            </button>
+          </td>
+        `;
+                tbody.appendChild(tr);
+            });
+
+            $('count-total').textContent = rows.length || 0;
+            $('count-answered').textContent = answered;
+
+            // Add plausible directly to the UI
+            $('count-notfound').innerHTML = `<span class="text-yellow-600 mr-2">${plausible} Pl</span> ${notFound}`;
+
+            hide('placeholder-grid');
+            show('summary-bar'); show('results-wrapper'); show('download-btn');
+        }
+
+        // ── Exporter ──
+        function downloadCSV() {
+            const rows = $('result-tbody').querySelectorAll('tr');
+            const lines = [['Question_ID', 'Question', 'Answer', 'Citation', 'Snippet']];
+
+            rows.forEach(tr => {
+                const cells = tr.querySelectorAll('td');
+                if (cells.length < 3) return;
+                const qid = cells[0].textContent.trim();
+                const question = cells[1].textContent.trim();
+                const answer = cells[2].querySelector('[contenteditable]')?.innerText.trim() || '';
+
+                let citation = '', snippet = '';
+                const contextDiv = cells[2].querySelector('.mt-4');
+                if (contextDiv) {
+                    const spans = contextDiv.querySelectorAll('span');
+                    if (spans.length >= 1) {
+                        // Extract citation from "CLOSEST CONTEXT FOUND — filename.txt"
+                        const raw = spans[0].textContent || '';
+                        const parts = raw.split('\u2014'); // em-dash
+                        citation = parts.length > 1 ? parts[1].trim() : raw.trim();
+                    }
+                    if (spans.length >= 2) {
+                        snippet = spans[1].textContent.trim().replace(/^"|"$/g, '');
+                    }
+                }
+
+                lines.push([qid, question, answer, citation || 'N/A', snippet || 'N/A']);
+            });
+
+            // Sanitize for Excel: prefix cells starting with =, +, -, @ with a space
+            function safe(v) {
+                let s = String(v).replace(/"/g, '""');
+                if (/^[=+\-@]/.test(s)) s = ' ' + s;
+                return '"' + s + '"';
+            }
+
+            const BOM = '\uFEFF';
+            const csv = BOM + lines.map(r => r.map(safe).join(',')).join('\r\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a'); link.href = url;
+            link.download = `aegis_responses_${new Date().toISOString().slice(0, 10)}.csv`;
+            link.click(); URL.revokeObjectURL(url);
+        }
+
+        // ── Regeneration UI Integration ──
+        async function regenerateAnswer(qId, questionText, btnElem) {
+            if (!window.currentDocId) return;
+            const originalText = btnElem.innerHTML;
+            btnElem.innerHTML = `<svg class="w-3 h-3 spinner text-blue-600" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg> Wait`;
+            btnElem.disabled = true;
+
+            try {
+                const res = await fetch('/regenerate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        document_id: window.currentDocId,
+                        question_id: qId,
+                        question: questionText
+                    })
+                });
+                if (!res.ok) throw new Error("Regeneration failed");
+                loadDocument(window.currentDocId); // Reload to flush row states perfectly
+            } catch (err) {
+                alert(err.message);
+                btnElem.innerHTML = originalText;
+                btnElem.disabled = false;
+            }
+        }
+    </script>
+</body>
+
+</html>

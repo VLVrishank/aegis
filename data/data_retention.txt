@@ -1,0 +1,37 @@
+=========================================
+AEGIS SECURITY SOLUTIONS: ENTERPRISE DATA RETENTION & DESTRUCTION PROTOCOL 
+=========================================
+Document ID: SEC-RET-055-2026
+Effective Date: February 1, 2026
+Owner: Data Privacy & Legal Operations Office (DPL)
+Classification: INTERNAL CONFIDENTIAL 
+
+1. PURPOSE
+The purpose of the Enterprise Data Retention and Destruction Protocol is to dictate the minimum and maximum lifecycles for retaining Aegis corporate information, both physically and electronically (Information Assets), in direct accordance with global legal obligations (e.g., GDPR, CCPA, SOX), operational requirements, and risk management strategies.
+
+2. SCOPE
+This protocol regulates all Aegis entities, subsidiaries, third-party contractors processing on our behalf, Cloud deployments (AWS, Azure, GCP), physical printouts, email communications, instant messaging platforms (Slack, Teams), and database archives globally.
+
+3. RETENTION PERIODS
+Data shall not be retained longer than mandated by legal hold constraints or operational necessity. Once the retention period lapses, information must be permanently sanitized or destroyed to prevent exfiltration.
+Classification   || Examples                                 || Minimum || Maximum 
+--------------------------------------------------------------------------------
+Tax & Payroll    || W-2s, 1099s, salary records, benefits    || 7 Years || 10 Years
+Financial LEDG   || Billing, General Ledger, CapEx records   || 7 Years || 10 Years
+Corporate Logs   || SIEM, App Logs, Web Server access logs   || 1 Year  || 2 Years
+Communications   || Email, Chat, Internal memorandums        || 3 Years || 5 Years
+PII/PHI / HIPAA  || Client data, employee medical info       || 3 Years || 7 Years
+Source Code/Git  || Production codebase, architectural docs  || 10 Years|| Indefinite
+CCTV Analytics   || Physical security recordings             || 30 Days || 90 Days
+
+4. DATA DESTRUCTION AND SANITIZATION
+Destruction of data must align with NIST Special Publication 800-88 rev. 1 (Guidelines for Media Sanitization). Deletion alone does not constitute sanitization; information must be cryptographically erased (crypto-shredding), overwritten heavily, or physically destroyed prior to media disposal or reassignment.
+- Solid State Drives (SSDs): Secure Erase (SE) commands or physical destruction via macerator to maximum particle size of 2 millimeters is required.
+- Hard Disk Drives (HDDs): Multi-pass wiping compliant with DoD 5220.22-M is mandatory before reuse; decommissioned drives must undergo degaussing or physical shredding.
+- Cloud Providers: Upon terminating a service or dataset, administrators operate cryptographic erasure (destroying KMS keys granting access to encrypted blobs).
+
+5. LEGAL HOLD DIRECTIVES
+Upon written notification from the Aegis General Counsel regarding an ongoing dispute, investigation, or litigation, a "Legal Hold" will be instituted. All scheduled destruction processes connected to the specified entities will be immediately suspended. Alteration or deletion of hold records is a federal offense and grounds for immediate dismissal and prosecution.
+
+6. COMPLIANCE AUDIT
+The DPL Office will perform bi-annual sampling of automated deletion systems to certify compliance with data disposal timelines. Evidence of destruction (Certificates of Destruction) will be maintained for 5 years.

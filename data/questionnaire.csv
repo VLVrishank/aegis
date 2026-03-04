@@ -1,0 +1,16 @@
+Question_ID,Question
+Q1,What encryption do you use for data at rest?
+Q2,Do you support MFA for admins?
+Q3,Are your servers located in Germany?
+Q4,What is your SLA for notifying customers about a data breach?
+Q5,Do you perform third-party penetration testing? Can we get a copy of the report?
+Q6,Is the Aegis platform HIPAA compliant?
+Q7,How quickly do you apply patches for Critical (CVSS 9+) vulnerabilities?
+Q8,Can your developers push code directly to the production branch without peer review?
+Q9,Who is your primary cloud hosting provider?
+Q10,Do you conduct background checks on new employees?
+Q11,Do you offshore any software development to third-party contractors?
+Q12,Are your SOC 2 Type II and ISO 27001 certifications up to date?
+Q13,What is your corporate policy regarding the use of teleportation devices by on-site staff?
+Q14,Can you provide the recipe for your cafeteria's famous chocolate chip cookies?
+Q15,How does the Aegis platform handle inter-dimensional time travel paradoxes?

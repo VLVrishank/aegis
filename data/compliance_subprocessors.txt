@@ -1,0 +1,60 @@
+=========================================
+AEGIS SECURITY SOLUTIONS: THIRD-PARTY RISK MANAGEMENT & AUTHORIZED SUB-PROCESSORS
+=========================================
+Document ID: SEC-VDM-077-2026
+Effective Date: January 1, 2026
+Owner: Vendor Risk Management (VRM) & Privacy Office
+Classification: PUBLIC (NDA REQUIRED FOR EXHIBIT B)
+
+1. PURPOSE
+The Third-Party Risk Management (TPRM) Policy and Authorized Sub-Processor registry guarantees Aegis Security Solutions ("Aegis") explicitly maintains control, visibility, and legal oversight over external vendors, cloud service providers, and contractors accessing, hosting, or processing Aegis Corporate, Client, or Employee data (PII/PHI).
+
+2. SCOPE
+This policy affects all Aegis direct procurement, legal, engineering, and IT departments globally. No vendor may be engaged to process Aegis data without executing a Data Processing Agreement (DPA), passing a formal Security Risk Assessment (SRA), and agreeing to the Aegis Standard Contractual Clauses (SCCs).
+
+3. VENDOR RISK ASSESSMENT PROCESS
+3.1. Initial Triage
+Vendors are categorized based on data criticality:
+- Tier 1 (Mission Critical/High Risk): Vendors processing PHI/PII, storing cryptographic material, or operating core SaaS infrastructure (e.g., AWS, Snowflake, Workday).
+- Tier 2 (Medium Risk): Vendors processing anonymized operational data, internal non-sensitive communication tools, marketing analytics without direct PII.
+- Tier 3 (Low Risk): Vendors providing public data feeds, office supplies, building maintenance (no logical IT access).
+
+3.2. Security Assessment
+Tier 1 and Tier 2 vendors must complete a comprehensive Standardize Information Gathering (SIG) Core questionnaire, provide their latest SOC 2 Type II report (with no material exceptions), and submit an ISO 27001 certificate. Penetration testing executive summaries are mandated for SaaS applications.
+
+3.3. Continuous Monitoring
+Aegis utilizes external cyber-risk scoring platforms (e.g., SecurityScorecard, BitSight) to continuously monitor the perimeter security of Tier 1 & 2 vendors. Score drops below "B" (or equivalent) trigger a mandatory 30-day remediation sequence.
+
+4. AUTHORIZED CLOUD & INFRASTRUCTURE SUB-PROCESSORS
+Aegis strictly limits data processing to the following vetted infrastructure and platform entities. Data sovereignty mandates routing processing specifically within the regions below unless explicit client consent is otherwise collected.
+
+- Amazon Web Services (AWS) 
+  Role: Primary Cloud Infrastructure as a Service (IaaS) / Managed Database (RDS). 
+  Data Types: All technical environments, encrypted backups, application databases.
+  Regions Authorized: US-East-1 (N. Virginia), US-West-2 (Oregon), EU-Central-1 (Frankfurt).
+
+- Microsoft Corporation (Azure / Entra ID)
+  Role: Global Identity Provider (IdP), Email Exchange, Enterprise Productivity (M365).
+  Data Types: Active Directory credentials, employee emails, corporate documentation.
+  Regions Authorized: Central US, West Europe.
+
+- Snowflake Inc.
+  Role: Enterprise Data Warehouse (EDW) / Analytics Platform.
+  Data Types: Masked analytics data, anonymized telemetry, financial forecasting.
+  Regions Authorized: AWS US-East-1 exclusively.
+
+- Datadog Inc.
+  Role: Infrastructure Monitoring, APM, and SIEM observability.
+  Data Types: Application logs, infrastructure metrics (No PII allowed via strict data-scrubbing rules).
+  Regions Authorized: US-1.
+
+- Zendesk Inc.
+  Role: Customer Relationship Management & Technical Support CRM.
+  Data Types: Client contact information, support ticket history.
+  Regions Authorized: US (Pod 17).
+
+5. SUB-PROCESSOR NOTIFICATION
+In accordance with GDPR Article 28, Aegis commits to notifying clients 30 days prior to engaging any new Tier 1 or critical Tier 2 sub-processor. Clients retain the right to object within 15 days of notification.
+
+6. OFFBOARDING AND TERMINATION
+Upon termination of a vendor contract, the VRM team must verify the execution of the Data Deletion protocol. A legally binding Certificate of Destruction must be returned to Aegis Legal within 60 days of the contract sunset. Logical access provisioning (SSO/VPN) is immediately revoked by the IT Service Desk.

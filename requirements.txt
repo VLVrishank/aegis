@@ -1,0 +1,13 @@
+fastapi
+uvicorn[standard]
+python-multipart
+pandas
+chromadb
+sentence-transformers
+onnxruntime==1.17.3
+groq
+langchain
+langchain-community
+PyJWT
+passlib
+bcrypt

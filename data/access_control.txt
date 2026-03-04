@@ -1,0 +1,39 @@
+=========================================
+AEGIS SECURITY SOLUTIONS: ACCESS CONTROL POLICY
+=========================================
+Document ID: SEC-AC-004-2026
+Effective Date: January 1, 2026
+Owner: Global Identity and Access Management (GIAM)
+Classification: CONFIDENTIAL
+
+1. PURPOSE
+The purpose of this Access Control Policy is to establish the rules, guidelines, and mechanisms for granting, monitoring, and revoking access to Aegis Security Solutions ("Aegis") corporate networks, systems, applications, and physical facilities.
+
+2. SCOPE
+This policy applies to all Aegis employees, contractors, third-party vendors, temporaries, and agents (collectively referred to as "Users") who attempt to access Aegis IT resources or physical facilities globally.
+
+3. LOGICAL ACCESS CONTROL
+3.1. Principle of Least Privilege
+Access rights are granted strictly on a "need-to-know" and "least privilege" basis. Users shall be provided only the minimum level of access required to perform their authorized job responsibilities. 
+
+3.2. Authentication Mechanisms
+- Multi-Factor Authentication (MFA): MFA is strictly mandatory for all administrative access, VPN connections to the corporate network, and access to all sensitive systems containing PII (Personally Identifiable Information), PHI (Protected Health Information), or financial data. Hardware security keys (FIDO2) are the preferred secondary authentication method. Soft-tokens (e.g., authenticator apps) are acceptable fallbacks. SMS-based 2FA is explicitly prohibited for administrative access.
+- Password Complexity: Passwords must be at least 16 characters in length, comprising a mix of upper and lower case letters, numbers, and special characters. Passwords must be rotated every 90 days. The use of corporate password managers (e.g., Enterprise Vault) is mandated. Single Sign-On (SSO) leveraging SAML 2.0 or OIDC must be utilized wherever technically feasible.
+
+3.3. Role-Based Access Control (RBAC)
+Access to Aegis systems must be governed by an approved RBAC matrix. Entitlements are tied to specific organizational roles and automated provisioning through the automated Identity Governance and Administration (IGA) platform (ActiveDirectory/Entra ID linked). Any deviation requiring discretionary access must be approved by the system owner and the user's direct line manager through a formal ticketing system (Jira Service Management) request.
+
+3.4. Access Reviews
+Quarterly access reviews (User Access Recertification) must be conducted by data and system owners to ensure access privileges remain appropriate. Privileged Access Management (PAM) accounts (e.g., root, Domain Admin) are subject to monthly reviews and must utilize just-in-time (JIT) provisioning requiring checkout with justification lasting no longer than 4 hours per session.
+
+3.5. Separation of Duties (SoD)
+Critical IT functions shall be segregated to prevent a single individual from circumventing security controls or committing fraud. Specifically, developers shall not possess write access to production environments, and database administrators shall not possess application-level access to manipulate financial ledgers.
+
+4. PHYSICAL ACCESS CONTROL
+Physical access to Aegis data centers and secure corporate zones requires badge authentication and biometric verification (retina or fingerprint scanning). Tailgating is strictly prohibited and constitutes a terminable offense. Visitor access requires continuous escort by an authorized Aegis badge holder.
+
+5. REVOCATION OF ACCESS
+Upon termination of employment or contract, all logical and physical access must be revoked immediately, not exceeding 4 hours post-termination notification by HR systems.
+
+6. EXCEPTIONS
+Any exceptions to this policy require documented approval from the Chief Information Security Officer (CISO) and must be reviewed annually.
