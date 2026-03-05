@@ -1,6 +1,6 @@
 
 
-# Aegis Responder: Automated RAG Compliance Assistant
+# Aegis Responder: Automated RAG FAQ Assistant
 
 **Live Demo:** [https://veliscoagent-aegis.hf.space/](https://veliscoagent-aegis.hf.space/)
 
@@ -10,7 +10,19 @@ But dealing with endless security questionnaires from vendors is incredibly tedi
 
 ## What I Built
 
-I built a headless AI compliance assistant that automates answering these endless vendor security questionnaires. You give it a CSV of questions, it searches our internal security policy documents using Retrieval-Augmented Generation (RAG), and it returns exactly what you need to tell the auditors—complete with confidence scores, citations, and exact snippets from the text. 
+I built a headless AI compliance assistant that automates answering these endless vendor security questionnaires. 
+
+### Accessing the App
+To keep the data secure, the app requires a login. You can create your own account on the landing page or use the pre-configured test account:
+- **Username:** `admin`
+- **Passcode:** `aegis2024`
+
+### Using the Tool (CSV Only)
+Currently, the system is optimized for **CSV files only**. To ensure the AI parses your questionnaire correctly, your file must include these two columns:
+1. `Question_ID`: A unique identifier for each row (e.g., Q1, Q2).
+2. `Question`: The actual text of the security or compliance question.
+
+Once uploaded, the system searches our internal security policy documents using Retrieval-Augmented Generation (RAG) and returns exactly what you need to tell the auditors—complete with confidence scores, citations, and exact snippets from the text. 
 
 Most importantly, if the model can't find an answer in the docs, it physically refuses to guess or hallucinate. Instead, it actively throws a "Flagged" status so I know exactly where a human needs to step in.
 
