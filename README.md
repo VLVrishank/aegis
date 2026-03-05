@@ -13,9 +13,7 @@ But dealing with endless security questionnaires from vendors is incredibly tedi
 I built a headless AI compliance assistant that automates answering these endless vendor security questionnaires. 
 
 ### Accessing the App
-To keep the data secure, the app requires a login. You can create your own account on the landing page or use the pre-configured test account:
-- **Username:** `admin`
-- **Passcode:** `aegis2024`
+To keep the data secure, the app requires a login. You can create your own account on the landing page or use the pre-configured test account
 
 ### Using the Tool (CSV Only)
 Currently, the system is optimized for **CSV files only**. To ensure the AI parses your questionnaire correctly, your file must include these two columns:
